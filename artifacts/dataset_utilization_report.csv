@@ -1,0 +1,5 @@
+Data Source,Raw Samples,Valid Samples,Removed (Duplicates/Infs),Training Samples,Validation Samples,Test Samples,Features,Attack Classes,Used?
+Edge-IIoTset Full Selected Corpus,157800,156986,814,109890,23548,23548,48,15,YES (Primary Model)
+Normal Sensor Streams (10 IoT Devices),450000,450000,0,--,--,--,61,1,YES (Integrated in Corpus)
+Attack Traffic Captures (14 Threat Types),580000,580000,0,--,--,--,61,14,YES (Integrated in Corpus)
+Raw PCAP Captures (24 Files),1250000,0,1250000,0,0,0,--,15,NO (Extracted as CSV Flows)

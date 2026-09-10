@@ -1,0 +1,50 @@
+{
+  "Ingestion": {
+    "mean_ms": 0.001,
+    "p50_ms": 0.001,
+    "p95_ms": 0.001,
+    "p99_ms": 0.002
+  },
+  "Preprocessing": {
+    "mean_ms": 0.144,
+    "p50_ms": 0.138,
+    "p95_ms": 0.183,
+    "p99_ms": 0.207
+  },
+  "mRMR_Selection": {
+    "mean_ms": 0.01,
+    "p50_ms": 0.01,
+    "p95_ms": 0.011,
+    "p99_ms": 0.012
+  },
+  "CNN_Ghost_SE": {
+    "mean_ms": 0.478,
+    "p50_ms": 0.458,
+    "p95_ms": 0.58,
+    "p99_ms": 0.595
+  },
+  "BiGRU": {
+    "mean_ms": 2.218,
+    "p50_ms": 2.149,
+    "p95_ms": 2.293,
+    "p99_ms": 3.88
+  },
+  "Attention_LowRank": {
+    "mean_ms": 0.752,
+    "p50_ms": 0.638,
+    "p95_ms": 0.701,
+    "p99_ms": 3.496
+  },
+  "Serialization_Publish": {
+    "mean_ms": 0.017,
+    "p50_ms": 0.016,
+    "p95_ms": 0.022,
+    "p99_ms": 0.028
+  },
+  "End_to_End_Pipeline": {
+    "mean_ms": 5.002,
+    "p50_ms": 4.723,
+    "p95_ms": 5.755,
+    "p99_ms": 9.467
+  }
+}

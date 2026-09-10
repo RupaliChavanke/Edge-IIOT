@@ -1,0 +1,13 @@
+{
+  "name": "Proposed_Hybrid_CNN_Ghost_BiGRU_MHA_LowRank",
+  "input_dim": 48,
+  "conv_channels": 64,
+  "ghost_ratio": 2,
+  "se_reduction": 8,
+  "gru_hidden_dim": 64,
+  "gru_num_layers": 1,
+  "num_attention_heads": 4,
+  "low_rank": 16,
+  "dropout": 0.25,
+  "entropy_threshold": 0.35
+}

@@ -1,0 +1,72 @@
+{
+  "redpanda": {
+    "brokers": "localhost:19092",
+    "docker_internal_brokers": "redpanda:9092",
+    "topic_raw": "edge-iiot-raw",
+    "topic_preprocessed": "edge-iiot-preprocessed",
+    "topic_predictions": "ids-predictions",
+    "topic_alerts": "ids-alerts",
+    "topic_metrics": "ids-metrics",
+    "topic_dead_letter": "ids-dead-letter",
+    "consumer_group": "iiot-ids-inference",
+    "client_id": "edge-iiot-client"
+  },
+  "data": {
+    "raw_path": "data/raw/ML-EdgeIIoT-dataset.csv",
+    "sample_path": "data/samples/edge_iiot_sample.csv",
+    "processed_dir": "data/processed",
+    "train_ratio": 0.7,
+    "val_ratio": 0.15,
+    "test_ratio": 0.15,
+    "random_seed": 42,
+    "target_column": "Attack_type",
+    "binary_label_column": "Attack_label"
+  },
+  "preprocessing": {
+    "mrmr_k_features": 48,
+    "scale_method": "robust",
+    "missing_strategy": "median",
+    "imputer_path": "checkpoints/imputer.pkl",
+    "scaler_path": "checkpoints/scaler.pkl",
+    "encoder_path": "checkpoints/label_encoder.pkl",
+    "feature_selector_path": "checkpoints/feature_selector.pkl"
+  },
+  "model": {
+    "name": "Proposed_Hybrid_CNN_Ghost_BiGRU_MHA_LowRank",
+    "input_dim": 22,
+    "conv_channels": 64,
+    "ghost_ratio": 2,
+    "se_reduction": 8,
+    "gru_hidden_dim": 64,
+    "gru_num_layers": 1,
+    "num_attention_heads": 4,
+    "low_rank": 16,
+    "dropout": 0.25,
+    "entropy_threshold": 0.35
+  },
+  "training": {
+    "batch_size": 512,
+    "epochs": 12,
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "focal_gamma": 2.0,
+    "lambda_focal": 1.0,
+    "lambda_center": 0.01,
+    "early_stopping_patience": 5,
+    "device": "auto",
+    "checkpoint_dir": "checkpoints",
+    "checkpoint_path": "checkpoints/best_model.pt",
+    "metrics_path": "checkpoints/metrics.json"
+  },
+  "streaming": {
+    "default_rate_msg_per_sec": 50,
+    "batch_size": 10,
+    "pause_between_batches": 0.05,
+    "stats_interval_sec": 2.0,
+    "risk_threshold_high": 0.7,
+    "risk_threshold_critical": 0.9
+  },
+  "experiments": {
+    "log_csv": "experiments/experiments.csv"
+  }
+}

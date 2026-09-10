@@ -1,0 +1,17 @@
+{
+  "active_model": "v1.0",
+  "models": {
+    "v1.0": {
+      "path": "artifacts",
+      "status": "production",
+      "accuracy": "95.66%",
+      "precision": "94.84%",
+      "recall": "94.59%",
+      "macro_f1": "94.68%",
+      "roc_auc": "99.85%",
+      "parameters": 370273,
+      "flops": "0.741 MFLOPs",
+      "p99_latency_ms": "9.47 ms"
+    }
+  }
+}

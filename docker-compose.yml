@@ -1,0 +1,128 @@
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      - --smp
+      - '1'
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --overprovisioned
+      - --node-id
+      - '0'
+      - --check=false
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr
+      - 0.0.0.0:8082
+      - --advertise-pandaproxy-addr
+      - localhost:18082
+      - --schema-registry-addr
+      - 0.0.0.0:8081
+      - --rpc-addr
+      - 0.0.0.0:33145
+      - --advertise-rpc-addr
+      - redpanda:33145
+    ports:
+      - "19092:19092"
+      - "18081:18081"
+      - "18082:18082"
+      - "19644:9644"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.*true'"]
+      interval: 5s
+      timeout: 10s
+      retries: 6
+      start_period: 10s
+    networks:
+      - redpanda-net
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.8.2
+    container_name: redpanda-console
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BROKERS: "redpanda:9092"
+      KAFKA_SCHEMAREGISTRY_ENABLED: "true"
+      KAFKA_SCHEMAREGISTRY_URLS: "http://redpanda:8081"
+      CONSOLE_CONFIG_FILE: ""
+    networks:
+      - redpanda-net
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edge-iiot-streamlit
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    ports:
+      - "8501:8501"
+    environment:
+      REDPANDA_BROKERS: "redpanda:9092"
+      REDPANDA_TOPIC_RAW: "edge-iiot-raw"
+      REDPANDA_TOPIC_PREPROCESSED: "edge-iiot-preprocessed"
+      REDPANDA_TOPIC_PREDICTIONS: "ids-predictions"
+      REDPANDA_TOPIC_ALERTS: "ids-alerts"
+      REDPANDA_TOPIC_METRICS: "ids-metrics"
+      REDPANDA_CONSUMER_GROUP: "iiot-ids-inference"
+      STREAMLIT_SERVER_PORT: "8501"
+      STREAMLIT_SERVER_ADDRESS: "0.0.0.0"
+    volumes:
+      - .:/app
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    networks:
+      - redpanda-net
+
+  ids-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edge-iiot-inference
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      REDPANDA_BROKERS: "redpanda:9092"
+    volumes:
+      - .:/app
+    command: python streaming/redpanda_consumer.py
+    networks:
+      - redpanda-net
+
+  ids-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edge-iiot-producer
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      REDPANDA_BROKERS: "redpanda:9092"
+      STREAM_RATE: "25"
+    volumes:
+      - .:/app
+    command: python streaming/redpanda_producer.py --rate 25 --dataset data/samples/edge_iiot_sample.csv --loop
+    networks:
+      - redpanda-net
+
+networks:
+  redpanda-net:
+    driver: bridge
+
+volumes:
+  redpanda_data:
