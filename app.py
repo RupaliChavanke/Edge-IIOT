@@ -497,6 +497,16 @@ if "active_page_num" not in st.session_state:
     st.session_state["active_page_num"] = int(m.group(1)) if m else 1
 
 # Quick Command Jumps (Fast Pins)
+def jump_to_page(page_num: int):
+    """Synchronize quick-jump state with the persistent navigation widget."""
+    page = next((p for p in RESEARCH_PAGES_META if p["num"] == page_num), None)
+    if page is None:
+        return
+    st.session_state["active_page_num"] = page_num
+    st.session_state["active_page"] = page["label"]
+    st.session_state["soc_nav_radio"] = page["label"]
+
+
 st.sidebar.markdown("""
 <div style="font-size: 10px; color: #94A3B8; text-transform: uppercase; font-weight: 800; letter-spacing: 0.6px; margin-bottom: 6px;">
     ⚡ Quick Command Jumps
@@ -505,17 +515,17 @@ st.sidebar.markdown("""
 q1, q2 = st.sidebar.columns(2)
 with q1:
     if st.button("🌟 1. Overview", key="qj_overview", use_container_width=True):
-        st.session_state["active_page_num"] = 1
+        jump_to_page(1)
         st.rerun()
     if st.button("💎 8. Model 96%", key="qj_model", use_container_width=True):
-        st.session_state["active_page_num"] = 8
+        jump_to_page(8)
         st.rerun()
 with q2:
     if st.button("🧠 7. Architecture", key="qj_arch", use_container_width=True):
-        st.session_state["active_page_num"] = 7
+        jump_to_page(7)
         st.rerun()
     if st.button("🎓 27. Defense", key="qj_demo", use_container_width=True):
-        st.session_state["active_page_num"] = 27
+        jump_to_page(27)
         st.rerun()
 
 st.sidebar.markdown("<div class='nav-divider'></div>", unsafe_allow_html=True)
