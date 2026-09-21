@@ -1,0 +1,49 @@
+{
+  "multi_seed_results": {
+    "seeds": [
+      42,
+      52,
+      62,
+      72,
+      82
+    ],
+    "f1_scores": [
+      0.942,
+      0.9425,
+      0.9435,
+      0.9443,
+      0.9472
+    ],
+    "accuracies": [
+      0.9478,
+      0.949,
+      0.9495,
+      0.9499,
+      0.9529
+    ],
+    "mean_macro_f1": 0.9439,
+    "std_macro_f1": 0.0018,
+    "mean_accuracy": 0.9498,
+    "std_accuracy": 0.0017
+  },
+  "stratified_5fold_cv": {
+    "fold_f1_scores": [
+      0.9493,
+      0.9439,
+      0.9475,
+      0.9458,
+      0.9503
+    ],
+    "fold_accuracies": [
+      0.9583,
+      0.9546,
+      0.9541,
+      0.9551,
+      0.9575
+    ],
+    "cv_mean_macro_f1": 0.9474,
+    "cv_std_macro_f1": 0.0023,
+    "cv_mean_accuracy": 0.9559,
+    "cv_std_accuracy": 0.0017
+  }
+}

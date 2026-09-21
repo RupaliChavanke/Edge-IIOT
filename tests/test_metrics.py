@@ -33,7 +33,7 @@ def test_compound_loss():
     deep_l = torch.randn(8, 15)
     latent = torch.randn(8, 128)
     targets = torch.randint(0, 15, (8,))
-    tot, focal_val, center_val = compound(fast_l, deep_l, latent, targets)
+    tot, focal_val, center_val, supcon_val = compound(fast_l, deep_l, latent, targets)
     assert tot.item() > 0.0
 
 

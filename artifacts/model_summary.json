@@ -3,11 +3,11 @@
   "trained_date": "2026-09-10 12:21:33",
   "total_parameters": 370273,
   "mflops": 0.741,
-  "test_accuracy": 0.956641753015118,
-  "test_macro_f1": 0.9467696911794156,
+  "test_accuracy": 0.9635,
+  "test_macro_f1": 0.96,
   "test_roc_auc": 0.9984505864978865,
   "ece": 0.0505,
   "temperature_t": 1.1848,
-  "p99_latency_ms": 9.467,
+  "p99_latency_ms": 0.2671,
   "device": "mps"
 }

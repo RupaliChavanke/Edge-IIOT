@@ -2,7 +2,7 @@
 Model Checkpointing and Deployment State Manager.
 """
 
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Tuple
 import os
 import json
 import torch
@@ -54,7 +54,8 @@ class CheckpointManager:
             raise FileNotFoundError(f"No checkpoint found at {self.model_path}")
 
         checkpoint = torch.load(self.model_path, map_location=device)
-        model.load_state_dict(checkpoint["state_dict"])
+        state_dict = checkpoint.get("state_dict", checkpoint) if isinstance(checkpoint, dict) else checkpoint
+        model.load_state_dict(state_dict, strict=False)
         model.to(device)
         model.eval()
         logger.info(f"Loaded checkpoint from {self.model_path} (epoch {checkpoint.get('epoch', 0)})")

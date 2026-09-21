@@ -14,20 +14,23 @@ from preprocessing.mrmr_jmi import MRMRJMISelector
 
 def test_cleaner_imputation():
     df = pd.DataFrame({
-        "frame.time": ["1.0", "2.0"],
-        "tcp.dstport": [80.0, np.nan],
-        "tcp.srcport": ["443", "inf"],
-        "http.request.method": ["GET", None],
-        "Attack_type": ["Normal", "DDoS"]
+        "frame.time": ["1.0", "2.0", "3.0"],
+        "tcp.dstport": [80.0, 443.0, np.nan],
+        "tcp.len": [100.0, 200.0, np.nan],
+        "tcp.srcport": ["443", "80", "inf"],
+        "http.request.method": ["GET", "POST", None],
+        "Attack_type": ["Normal", "DDoS", "Normal"]
     })
     cleaner = EdgeIIoTCleaner(drop_metadata=True)
     cleaner.fit(df)
     transformed = cleaner.transform(df)
 
     assert "frame.time" not in transformed.columns
-    assert "tcp.dstport" in transformed.columns
-    assert not transformed["tcp.dstport"].isnull().any()
-    assert not np.isinf(transformed["tcp.srcport"]).any()
+    assert "tcp.dstport" not in transformed.columns  # Purged to prevent shortcut leakage
+    assert "tcp.srcport" not in transformed.columns
+    assert "tcp.len" in transformed.columns
+    assert not transformed["tcp.len"].isnull().any()
+    assert not np.isinf(transformed["tcp.len"].to_numpy()).any()
 
 
 def test_encoder_and_target_discovery():

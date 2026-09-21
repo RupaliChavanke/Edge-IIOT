@@ -1,0 +1,4 @@
+Engine,P50_ms,P95_ms,P99_ms,Throughput_eps,Model_Size_MB
+PyTorch Native (FP32),0.4217,0.5193,1.4396,1880.5,0.63
+ONNX Runtime (CPU),0.0863,0.1247,0.2686,10386.7,0.64
+Distilled Student Net,0.0676,0.1104,0.1411,13034.0,0.04

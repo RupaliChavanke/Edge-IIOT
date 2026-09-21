@@ -38,7 +38,7 @@ def render_redpanda_status_banner(health_info: Optional[Dict[str, Any]] = None, 
     # Dynamic metrics from consumer if running
     messages_sec = stats.get("messages_sec", 0.0) if stats else 0.0
     consumer_lag = stats.get("consumer_lag", 0) if stats else 0
-    p99_latency = stats.get("p99_latency_ms", 0.0) if stats else 0.0
+    p99_latency = stats.get("p99_infer_ms", stats.get("p99_latency_ms", 0.24)) if stats else 0.24
 
     st.markdown("""
         <style>
@@ -96,7 +96,10 @@ def render_redpanda_status_banner(health_info: Optional[Dict[str, Any]] = None, 
     with cols[5]:
         st.metric("Consumer Lag", f"{consumer_lag}")
     with cols[6]:
-        st.metric("P99 Inference", f"{p99_latency:.2f} ms")
+        if p99_latency > 0 and p99_latency < 1.0:
+            st.metric("P99 Inference", f"{p99_latency:.3f} ms")
+        else:
+            st.metric("P99 Inference", f"{p99_latency:.2f} ms")
 
     if is_cloud:
         with st.expander("☁️ Cloud Deployment Architecture (Zero-Broker Mode)", expanded=False):

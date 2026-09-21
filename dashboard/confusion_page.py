@@ -3,6 +3,8 @@ Page 10: Multidimensional Confusion Matrix Analysis.
 Interactive raw, row-normalized, and column-normalized heatmaps with One-vs-Rest metrics and export options.
 """
 
+import os
+import json
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -24,9 +26,17 @@ def render_confusion_page():
         return
 
     cm_raw = np.array(metrics["Confusion_Matrix"])
-    class_names = [p["Class"] for p in metrics.get("Per_Class", [])]
+    class_names = [p.get("Class") or p.get("Attack Type") for p in metrics.get("Per_Class", []) if (p.get("Class") or p.get("Attack Type"))]
+    if not class_names and os.path.exists("artifacts/class_names.json"):
+        with open("artifacts/class_names.json", "r") as f:
+            class_names = json.load(f)
     if not class_names:
         class_names = [f"Class_{i}" for i in range(len(cm_raw))]
+
+    # Display test partition info
+    total_test_samples = int(np.sum(cm_raw))
+    correct_test_samples = int(np.trace(cm_raw))
+    st.info(f"📋 **Held-Out Test Split**: Evaluated on **{total_test_samples:,} samples** across **{len(class_names)} classes** | **{correct_test_samples:,} correct** ({correct_test_samples/max(1, total_test_samples)*100:.2f}% accuracy) | **{total_test_samples - correct_test_samples:,} misclassifications**")
 
     col_ctrl1, col_ctrl2 = st.columns(2)
     with col_ctrl1:
@@ -51,7 +61,7 @@ def render_confusion_page():
 
     selected_class = st.selectbox("Select Attack Category to Inspect:", class_names)
     pc_data = metrics.get("Per_Class", [])
-    class_stat = next((item for item in pc_data if item["Class"] == selected_class), None)
+    class_stat = next((item for item in pc_data if (item.get("Class") or item.get("Attack Type")) == selected_class), None)
 
     if class_stat:
         c1, c2, c3, c4 = st.columns(4)

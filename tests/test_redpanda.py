@@ -50,4 +50,4 @@ def test_redpanda_health_checker():
     checker = RedpandaHealthChecker("localhost:19092")
     health = checker.check_health()
     assert "status" in health
-    assert health["status"] in ["CONNECTED", "DISCONNECTED"]
+    assert health["status"] in ["CONNECTED", "DISCONNECTED", "CLOUD_MODE"]

@@ -246,8 +246,8 @@ def plot_model_radar_comparison(benchmark_df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     categories = ["Accuracy", "Precision", "Recall", "F1_Score", "ROC_AUC", "Speed_Rank", "Efficiency_Rank"]
 
-    models_to_plot = ["PROPOSED HYBRID MODEL", "Random Forest", "1D-CNN", "BiGRU", "CNN-BiLSTM"]
-    colors = ["#10B981", "#3B82F6", "#F59E0B", "#8B5CF6", "#EC4899"]
+    models_to_plot = ["PROPOSED HYBRID MODEL", "XGBoost", "Random Forest", "CNN-BiGRU-Attention", "Original Baseline Model"]
+    colors = ["#10B981", "#38BDF8", "#F59E0B", "#8B5CF6", "#EF4444"]
 
     for i, m_name in enumerate(models_to_plot):
         row = benchmark_df[benchmark_df["Model"] == m_name]

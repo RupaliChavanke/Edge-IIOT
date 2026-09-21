@@ -4,6 +4,7 @@ Live monitoring of edge system utilization (CPU/RAM/MPS), consumer lag, throughp
 """
 
 import psutil
+import pandas as pd
 import streamlit as st
 import plotly.express as px
 

@@ -1,0 +1,7 @@
+{
+  "teacher_params": 162479,
+  "teacher_macro_f1": 0.9331,
+  "student_params": 10831,
+  "student_macro_f1": 0.8227,
+  "param_reduction_pct": 93.33
+}

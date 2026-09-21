@@ -1,0 +1,5 @@
+Model,Accuracy_Mean (%),Accuracy_Std (%),Macro_F1_Mean (%),Macro_F1_Std (%),Macro_F1_95_CI,Precision_Mean (%),Recall_Mean (%),Paired_t_test_p_val,Seeds_Tested
+XGBoost,98.75,0.119,98.32,0.393,"[97.84%, 98.81%]",98.76,97.96,0.3187 (n.s.),"42, 52, 62, 72, 82"
+Random Forest,98.17,0.032,96.3,0.56,"[95.61%, 97.00%]",95.39,98.12,7.2839e-03,"42, 52, 62, 72, 82"
+Decision Tree,98.59,0.193,98.08,0.369,"[97.62%, 98.54%]",98.53,97.73,Ref Baseline,"42, 52, 62, 72, 82"
+Ensemble (Soft-Voting),98.73,0.13,98.35,0.287,"[97.99%, 98.71%]",98.67,98.08,0.1153 (n.s.),"42, 52, 62, 72, 82"

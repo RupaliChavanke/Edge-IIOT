@@ -76,11 +76,16 @@ def render_benchmark_page():
 
     st.markdown("---")
     st.subheader("📋 Complete Scientific Benchmark Comparison Table")
-    st.dataframe(
-        benchmark_df.style.highlight_max(subset=["Accuracy", "F1_Macro", "ROC_AUC", "MCC"], color="#065F46")
-                          .highlight_min(subset=["P95_Latency_ms", "FPR", "Parameters"], color="#1E3A8A"),
-        use_container_width=True
-    )
+    max_cols = [c for c in ["Accuracy", "F1_Macro", "ROC_AUC", "MCC"] if c in benchmark_df.columns]
+    min_cols = [c for c in ["P95_Latency_ms", "P95 Latency (ms)", "FPR", "Parameters"] if c in benchmark_df.columns]
+
+    styler = benchmark_df.style
+    if max_cols:
+        styler = styler.highlight_max(subset=max_cols, color="#065F46")
+    if min_cols:
+        styler = styler.highlight_min(subset=min_cols, color="#1E3A8A")
+
+    st.dataframe(styler, use_container_width=True)
 
     st.download_button(
         "📥 Download Full Benchmark Results CSV",

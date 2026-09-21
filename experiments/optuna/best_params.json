@@ -1,0 +1,9 @@
+{
+  "learning_rate": 0.002443929017938535,
+  "weight_decay": 1.532367460679381e-05,
+  "dropout": 0.32617680788212317,
+  "conv_channels": 64,
+  "gru_hidden_dim": 32,
+  "focal_gamma": 1.6643703198176967,
+  "lambda_center": 0.008862807701277934
+}

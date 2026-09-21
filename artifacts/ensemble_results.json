@@ -1,0 +1,5 @@
+{
+  "optimal_weight_neural": 0.3,
+  "optimal_weight_xgb": 0.7,
+  "ensemble_validation_macro_f1": 0.9447
+}

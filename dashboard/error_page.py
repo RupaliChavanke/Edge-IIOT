@@ -31,8 +31,8 @@ def render_error_page():
     df_cm = pd.read_csv(cm_csv, index_col=0) if os.path.exists(cm_csv) else None
 
     # Calculate aggregate error metrics
-    total_test = int(df_per_class["Samples"].sum()) if "Samples" in df_per_class.columns else 750
-    total_tp = int(df_per_class["TP"].sum()) if "TP" in df_per_class.columns else 700
+    total_test = int(df_per_class["Samples"].sum()) if "Samples" in df_per_class.columns else 2355
+    total_tp = int(df_per_class["TP"].sum()) if "TP" in df_per_class.columns else 2269
     # From confusion matrix trace
     if df_cm is not None:
         cm_arr = df_cm.values
@@ -41,7 +41,7 @@ def render_error_page():
         num_errors = total_samples - correct_count
         error_rate = (num_errors / total_samples) * 100.0
     else:
-        acc = metrics.get("Accuracy", 0.98)
+        acc = metrics.get("Accuracy", 0.9635)
         num_errors = int(total_test * (1.0 - acc))
         error_rate = (1.0 - acc) * 100.0
 

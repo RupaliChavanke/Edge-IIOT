@@ -1,0 +1,6 @@
+{
+  "stage1_accuracy": 0.9941,
+  "stage1_f1": 0.9965,
+  "hierarchical_macro_f1": 0.9415,
+  "hierarchical_accuracy": 0.949
+}

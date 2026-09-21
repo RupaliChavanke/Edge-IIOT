@@ -1,0 +1,12 @@
+Perturbation_Type,Severity_Level,Test_Accuracy,Test_Macro_F1,Accuracy_Degradation_Pct,F1_Degradation_Pct,Robustness_Status
+Clean Baseline,None,98.58,98.14,0.0,0.0,PASSED (Reference)
+Gaussian Feature Noise,sigma = 0.05,33.88,33.23,64.7,64.91,MODERATE
+Gaussian Feature Noise,sigma = 0.1,32.61,30.54,65.98,67.6,MODERATE
+Gaussian Feature Noise,sigma = 0.2,31.39,28.32,67.2,69.82,MODERATE
+Gaussian Feature Noise,sigma = 0.3,30.82,27.5,67.76,70.64,MODERATE
+Missing Feature Dropout,5% features zeroed,93.15,91.38,5.43,6.76,GOOD
+Missing Feature Dropout,10% features zeroed,87.46,85.49,11.12,12.65,MODERATE
+Missing Feature Dropout,20% features zeroed,77.16,75.59,21.43,22.55,MODERATE
+Missing Feature Dropout,30% features zeroed,67.28,65.72,31.3,32.42,MODERATE
+Extreme Outlier Spikes,10% rows multiplied by 10x,97.4,96.2,1.19,1.94,RESILIENT
+Class Distribution Prior Shift,50% reduction in benign traffic,98.5,98.15,0.09,-0.01,STABLE

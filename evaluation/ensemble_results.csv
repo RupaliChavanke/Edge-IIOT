@@ -1,0 +1,3 @@
+Accuracy,Precision_Macro,Precision_Weighted,Recall_Macro,Recall_Weighted,F1_Macro,F1_Weighted,ROC_AUC,PR_AUC,Balanced_Accuracy,MCC,FPR,FNR,Model,Parameters,FLOPs_M,Model_Size_MB,P50_Latency_ms,P95_Latency_ms,P99_Latency_ms,Train_Time_s
+0.9839,0.9679,0.9843,0.9757,0.9839,0.9714,0.984,0.9997,0.9925,0.9757,0.9824,0.0011,0.0243,Ensemble (Uniform Soft-Voting),1935,0.05,59.29,0.015,0.022,0.035,5.2
+0.9867,0.9838,0.9868,0.9786,0.9867,0.981,0.9867,0.9997,0.993,0.9786,0.9855,0.0009,0.0214,Ensemble (Optimized Soft-Voting),1935,0.05,59.29,0.015,0.022,0.035,5.5

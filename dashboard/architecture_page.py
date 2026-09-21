@@ -3,6 +3,7 @@ Page 2: System Architecture & Theoretical Foundations.
 Provides deep PhD-level mathematical descriptions, layer-by-layer formulas, and interactive diagrams.
 """
 
+import os
 import streamlit as st
 import pandas as pd
 from visualization.architecture import render_research_architecture_figure
@@ -13,7 +14,157 @@ def render_architecture_page():
     st.title("🏛️ Proposed Research Architecture & Theoretical Model")
     st.caption("Mathematical formulation and modular structural breakdown of the hybrid streaming intrusion detection system.")
 
-    st.plotly_chart(render_research_architecture_figure(), use_container_width=True)
+    from visualization.architecture import get_pipeline_stage_details
+    stage_details = get_pipeline_stage_details()
+
+    tab_vis1, tab_vis2, tab_vis3 = st.tabs([
+        "🌐 3D Real-World Physical Architecture (White Studio)",
+        "📐 Formal Publication Neural Pipeline Blueprint",
+        "🔍 Interactive Stage-by-Stage Architecture Inspector"
+    ])
+
+    with tab_vis1:
+        arch_3d_path = "artifacts/architecture_3d_realworld.png"
+        if os.path.exists(arch_3d_path):
+            st.markdown("""
+            <div style="background:#FFFFFF; border-radius:12px; padding:16px; border:1px solid #E2E8F0; box-shadow:0 8px 24px rgba(0,0,0,0.15); margin-bottom:14px;">
+            """, unsafe_allow_html=True)
+            st.image(
+                arch_3d_path, 
+                caption="Figure 1: Authentic 3D Isometric Physical Architecture for Edge-IIoT Real-Time Intrusion Detection System (Clean White Background)",
+                use_container_width=True
+            )
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            with open(arch_3d_path, "rb") as f_img:
+                st.download_button(
+                    label="📥 Download High-Resolution 3D Architecture Diagram (PNG)",
+                    data=f_img.read(),
+                    file_name="edge_iiot_3d_realworld_architecture.png",
+                    mime="image/png"
+                )
+
+        st.markdown("""
+        <style>
+        .component-pill {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.65) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            transition: all 0.25s ease;
+            box-sizing: border-box;
+        }
+        .component-pill:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.18);
+        }
+        .component-pill h5 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #38BDF8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.2px;
+        }
+        .component-pill p {
+            margin: 0;
+            font-size: 11.5px;
+            color: #CBD5E1;
+            line-height: 1.5;
+        }
+        .component-pill code {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34D399;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 10.5px;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        st.markdown("#### 🛠️ Real-World Physical System Breakdown")
+        c_p1, c_p2 = st.columns(2)
+        with c_p1:
+            st.markdown("""
+            <div class="component-pill">
+                <h5>🏭 1. Industrial IoT Field Sensing (Edge-IIoTset)</h5>
+                <p>Siemens S7-1200 / Modbus-TCP PLCs and smart factory environmental sensors transmitting 61 raw network flow features under heavy industrial noise.</p>
+            </div>
+            <div class="component-pill">
+                <h5>⚡ 2. Ruggedized DIN-Rail Edge Gateway</h5>
+                <p>Low-power industrial IoT edge computing router performing wire-speed packet capture, preliminary framing, and socket serialization.</p>
+            </div>
+            <div class="component-pill">
+                <h5>🚀 3. Distributed Redpanda Ingestion Broker</h5>
+                <p>Enterprise C++ Kafka-compatible engine receiving raw event streams on topic <code>edge-iiot-raw</code> with zero memory copies and P99 latency under 1.2 ms.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with c_p2:
+            st.markdown("""
+            <div class="component-pill">
+                <h5>🧠 4. Edge AI Neural Inference Accelerator</h5>
+                <p>Hardware-accelerated ONNX runtime executing fused Depthwise Conv1D, Ghost Modules, SE Attention, and BiGRU in <b>0.089 ms</b> with 9,896 eps throughput.</p>
+            </div>
+            <div class="component-pill">
+                <h5>🛡️ 5. Dual-Monitor SOC Cyber Defense Workstation</h5>
+                <p>Automated inline firewall mitigation, predictive entropy routing diagnostics, and real-time 15-class threat classification with human-in-the-loop overrides.</p>
+            </div>
+            <div class="component-pill">
+                <h5>🔒 6. Automated Inline Threat Mitigation Engine</h5>
+                <p>Autonomous TCP reset, dynamic firewall rule synthesis, and sub-second zero-trust edge isolation via <code>ids-alerts</code> topic.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    with tab_vis2:
+        theme_sel = st.radio("Blueprint Theme:", ["Clean White (Publication)", "Cyber Dark"], horizontal=True, key="arch_page_theme")
+        st.plotly_chart(
+            render_research_architecture_figure(theme="white" if "White" in theme_sel else "dark"),
+            use_container_width=True,
+            config={"displayModeBar": False, "responsive": True}
+        )
+
+    with tab_vis3:
+        st.markdown("### 🔍 Interactive Deep Architecture & Tensor Inspector")
+        st.caption("Click through any pipeline stage to inspect its mathematical transformations, tensor shapes, parameters, and latency budgets.")
+
+        selected_stage_key = st.selectbox(
+            "Select Pipeline Stage to Inspect:",
+            options=list(stage_details.keys()),
+            index=4,  # Default to Stage 5 (Spatial 1D-CNN + Ghost + SE)
+            key="arch_stage_inspector_select"
+        )
+        st_info = stage_details[selected_stage_key]
+
+        c_box1, c_box2, c_box3 = st.columns(3)
+        with c_box1:
+            st.metric("Input Tensor", st_info["input_shape"])
+        with c_box2:
+            st.metric("Output Tensor", st_info["output_shape"])
+        with c_box3:
+            st.metric("Stage Latency", st_info["latency"])
+
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 18px; margin: 14px 0;">
+            <div style="font-size: 16px; font-weight: 800; color: #38BDF8;">{st_info['name']}</div>
+            <div style="font-size: 12px; color: #94A3B8; margin-top: 4px;"><b>Active Components:</b> {st_info['components']}</div>
+            <div style="font-size: 12px; color: #10B981; margin-top: 4px;"><b>Parameter Footprint:</b> {st_info['params']}</div>
+            <div style="font-size: 13px; color: #E2E8F0; margin-top: 10px; line-height: 1.6;">{st_info['mechanism']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("**Mathematical Formulation:**")
+        st.latex(st_info["formula"])
+
+    st.markdown("---")
 
     tab1, tab2, tab3, tab4 = st.tabs([
         "🔬 Mathematical Formulations",

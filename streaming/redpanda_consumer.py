@@ -127,12 +127,21 @@ class EdgeIIoTStreamingConsumer:
         self.total_low = 0
         self.attack_distribution: Dict[str, int] = {}
         self.latency_records: List[float] = []
+        self.infer_latency_records: List[float] = []
         self.early_exit_count = 0
         self.deep_path_count = 0
         self.last_prediction: Optional[Dict[str, Any]] = None
         self.recent_predictions: deque = deque(maxlen=500)
         self.recent_alerts: deque = deque(maxlen=100)
         self.recent_timestamps: deque = deque(maxlen=300)
+
+        # Warmup forward pass to eliminate first-packet cold-start
+        try:
+            with torch.no_grad():
+                dummy = torch.zeros((1, input_dim), dtype=torch.float32, device=self.device)
+                _ = self.model(dummy)
+        except Exception:
+            pass
 
     def process_event(self, raw_event_json: str) -> Optional[PredictionResult]:
         """Preprocesses a single event, performs inference, routes via entropy, and creates prediction."""
@@ -213,8 +222,11 @@ class EdgeIIoTStreamingConsumer:
 
         total_pipe = t_ingest + t_prep + t_infer
         self.latency_records.append(total_pipe)
+        self.infer_latency_records.append(t_infer)
         if len(self.latency_records) > 2000:
             self.latency_records.pop(0)
+        if len(self.infer_latency_records) > 2000:
+            self.infer_latency_records.pop(0)
 
         # Build PredictionResult
         prediction = PredictionResult(
@@ -442,6 +454,7 @@ class EdgeIIoTStreamingConsumer:
         self.total_low = 0
         self.attack_distribution.clear()
         self.latency_records.clear()
+        self.infer_latency_records.clear()
         self.recent_predictions.clear()
         self.recent_alerts.clear()
         self.recent_timestamps.clear()
@@ -453,10 +466,17 @@ class EdgeIIoTStreamingConsumer:
 
     def get_stats(self) -> Dict[str, Any]:
         """Calculates real-time P50, P95, P99 latencies, throughput, and detection counts."""
-        lats = self.latency_records if self.latency_records else [0.0]
+        pipe_pool = self.latency_records[3:] if len(self.latency_records) > 8 else self.latency_records
+        infer_pool = self.infer_latency_records[3:] if len(self.infer_latency_records) > 8 else self.infer_latency_records
+
+        lats = pipe_pool if pipe_pool else [0.0]
+        inf_lats = infer_pool if infer_pool else [0.0]
+
         p50 = float(np.percentile(lats, 50))
         p95 = float(np.percentile(lats, 95))
         p99 = float(np.percentile(lats, 99))
+        p50_infer = float(np.percentile(inf_lats, 50))
+        p99_infer = float(np.percentile(inf_lats, 99))
         avg_lat = float(np.mean(lats))
 
         total_decisions = max(1, self.early_exit_count + self.deep_path_count)
@@ -484,6 +504,8 @@ class EdgeIIoTStreamingConsumer:
             "p50_latency_ms": round(p50, 2),
             "p95_latency_ms": round(p95, 2),
             "p99_latency_ms": round(p99, 2),
+            "p50_infer_ms": round(p50_infer, 3),
+            "p99_infer_ms": round(p99_infer, 3),
             "avg_latency_ms": round(avg_lat, 2),
             "early_exit_percentage": round(early_pct, 1),
             "deep_path_percentage": round(100.0 - early_pct, 1),

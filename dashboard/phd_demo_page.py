@@ -4,6 +4,8 @@ Provides an interactive 18-step guided defense walkthrough covering all stages:
 Pretrained Model Verification -> Redpanda Ingestion -> Dynamic Inference -> Real-Time Metrics -> Offline vs Live Degradation.
 """
 
+import os
+import json
 import streamlit as st
 import pandas as pd
 from models.model_manager import ModelManager

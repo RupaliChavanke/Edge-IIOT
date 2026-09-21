@@ -1,0 +1,13 @@
+{
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "processor": "arm",
+  "machine": "arm64",
+  "python_version": "3.14.7 (v3.14.7:823f0323ee6, Aug  5 2026, 07:07:01) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "torch_version": "2.14.0",
+  "mps_available": true,
+  "cuda_available": false,
+  "cpu_count_logical": 8,
+  "cpu_count_physical": 8,
+  "total_ram_gb": 16.0,
+  "timestamp": "2026-09-19 03:46:26 UTC"
+}

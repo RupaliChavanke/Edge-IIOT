@@ -1,11 +1,20 @@
 """
-PyTorch Training Orchestrator for Proposed Hybrid Model.
-Includes validation, entropy threshold calibration, and test set evaluation.
+Research-Grade PyTorch Training Orchestrator for Proposed Hybrid Edge-IIoT IDS Model.
+Implements:
+- AdamW optimizer with weight decay
+- CosineAnnealingLR with warmup
+- Gradient clipping
+- Early stopping strictly on Validation Macro-F1
+- Post-hoc Temperature Scaling Calibration on Validation split
+- Evaluates untouched Test split only once at checkpoint freeze
 """
 
-from typing import Dict, List, Optional, Tuple, Any, Callable
+from typing import Dict, List, Optional, Tuple, Any
+import os
 import time
+import json
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
@@ -14,23 +23,21 @@ import logging
 from models.proposed_model import ProposedHybridEdgeIIoTModel
 from training.losses import ProposedCompoundLoss
 from training.metrics import calculate_comprehensive_metrics
-from training.checkpoint import CheckpointManager
+from evaluation.calibration import TemperatureScaler, compute_calibration_metrics
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("Trainer")
 
 
 def get_optimal_device() -> torch.device:
-    """Selects MPS (Apple Silicon GPU), CUDA, or CPU."""
     if torch.backends.mps.is_available():
         return torch.device("mps")
     elif torch.cuda.is_available():
         return torch.device("cuda")
-    else:
-        return torch.device("cpu")
+    return torch.device("cpu")
 
 
 class EdgeIIoTTrainer:
-    """Trains the proposed hybrid model with Focal + Center Loss and early-exit routing."""
+    """Trains the proposed hybrid model with Compound Focal + Center + SupCon loss."""
 
     def __init__(
         self,
@@ -42,26 +49,26 @@ class EdgeIIoTTrainer:
         self.config = config
         self.device = device or get_optimal_device()
         self.model = model.to(self.device)
-        self.checkpoint_manager = CheckpointManager(checkpoint_dir=checkpoint_dir)
+        self.checkpoint_dir = checkpoint_dir
+        os.makedirs(checkpoint_dir, exist_ok=True)
 
-        # Hyperparameters
         train_cfg = config.get("training", {})
-        self.batch_size = train_cfg.get("batch_size", 64)
-        self.epochs = train_cfg.get("epochs", 15)
-        self.lr = train_cfg.get("learning_rate", 0.001)
+        self.batch_size = train_cfg.get("batch_size", 128)
+        self.epochs = train_cfg.get("epochs", 20)
+        self.lr = train_cfg.get("learning_rate", 0.002)
         self.weight_decay = train_cfg.get("weight_decay", 1e-4)
         self.gamma = train_cfg.get("focal_gamma", 2.0)
         self.lambda_focal = train_cfg.get("lambda_focal", 1.0)
         self.lambda_center = train_cfg.get("lambda_center", 0.01)
-        self.patience = train_cfg.get("early_stopping_patience", 5)
+        self.patience = train_cfg.get("early_stopping_patience", 7)
 
-        # Loss and Optimizer
         self.criterion = ProposedCompoundLoss(
             num_classes=model.num_classes,
             feat_dim=128,
             gamma=self.gamma,
             lambda_focal=self.lambda_focal,
-            lambda_center=self.lambda_center
+            lambda_center=self.lambda_center,
+            lambda_supcon=0.005
         ).to(self.device)
 
         self.optimizer = torch.optim.AdamW(
@@ -69,18 +76,19 @@ class EdgeIIoTTrainer:
             lr=self.lr,
             weight_decay=self.weight_decay
         )
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="max", factor=0.5, patience=2
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            self.optimizer, T_max=self.epochs, eta_min=1e-5
         )
 
         self.history: List[Dict[str, Any]] = []
+        self.calibrator = TemperatureScaler().to(self.device)
 
     def train_epoch(self, dataloader: DataLoader) -> Dict[str, float]:
-        """Runs one epoch of training."""
         self.model.train()
         total_loss = 0.0
         total_focal = 0.0
         total_center = 0.0
+        total_supcon = 0.0
         num_batches = 0
 
         for X_b, y_b in dataloader:
@@ -90,7 +98,7 @@ class EdgeIIoTTrainer:
             self.optimizer.zero_grad()
             out = self.model(X_b, routing_mode="train")
 
-            loss, focal_val, center_val = self.criterion(
+            loss, focal_val, center_val, supcon_val = self.criterion(
                 fast_logits=out["fast_logits"],
                 deep_logits=out["deep_logits"],
                 latent_features=out["latent_features"],
@@ -98,145 +106,144 @@ class EdgeIIoTTrainer:
             )
 
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=2.0)
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
             self.optimizer.step()
 
             total_loss += loss.item()
             total_focal += focal_val.item()
             total_center += center_val.item()
+            total_supcon += supcon_val.item()
             num_batches += 1
 
+        self.scheduler.step()
+        n = max(1, num_batches)
         return {
-            "loss": total_loss / max(1, num_batches),
-            "focal_loss": total_focal / max(1, num_batches),
-            "center_loss": total_center / max(1, num_batches)
+            "loss": total_loss / n,
+            "focal_loss": total_focal / n,
+            "center_loss": total_center / n,
+            "supcon_loss": total_supcon / n
         }
 
-    def evaluate(
+    def evaluate_split(
         self,
-        dataloader: DataLoader,
+        X: np.ndarray,
+        y: np.ndarray,
         class_names: List[str],
         routing_mode: str = "dynamic",
         threshold: Optional[float] = None
     ) -> Dict[str, Any]:
-        """Evaluates model performance on validation or test set."""
         self.model.eval()
+        tensor_X = torch.from_numpy(X.astype(np.float32)).to(self.device)
+        loader = DataLoader(TensorDataset(tensor_X, torch.from_numpy(y)), batch_size=256, shuffle=False)
+
         all_preds = []
-        all_targets = []
         all_probs = []
         all_paths = []
         latencies = []
 
         with torch.no_grad():
-            for X_b, y_b in dataloader:
-                X_b = X_b.to(self.device)
-                out = self.model(X_b, routing_mode=routing_mode, custom_threshold=threshold)
+            for xb, _ in loader:
+                t0 = time.perf_counter()
+                out = self.model(xb, routing_mode=routing_mode, custom_threshold=threshold)
+                latencies.append((time.perf_counter() - t0) * 1000.0 / len(xb))
 
                 all_preds.append(out["predictions"].cpu().numpy())
-                all_targets.append(y_b.numpy())
                 all_probs.append(out["probabilities"].cpu().numpy())
                 all_paths.extend(out["path"])
-                latencies.append(out["latency_ms"])
 
-        y_pred = np.concatenate(all_preds)
-        y_true = np.concatenate(all_targets)
-        y_prob = np.concatenate(all_probs, axis=0)
+        preds = np.concatenate(all_preds)
+        probs = np.concatenate(all_probs)
 
-        metrics = calculate_comprehensive_metrics(y_true, y_pred, y_prob, class_names=class_names)
-        early_exit_pct = (sum(1 for p in all_paths if p == "FAST") / max(1, len(all_paths))) * 100.0
-
-        metrics["Early_Exit_Percentage"] = early_exit_pct
-        metrics["Deep_Path_Percentage"] = 100.0 - early_exit_pct
-        metrics["Average_Batch_Latency_ms"] = float(np.mean(latencies))
-        metrics["P50_Latency_ms"] = float(np.percentile(latencies, 50))
-        metrics["P95_Latency_ms"] = float(np.percentile(latencies, 95))
-        metrics["P99_Latency_ms"] = float(np.percentile(latencies, 99))
+        metrics = calculate_comprehensive_metrics(y, preds, probs=probs, class_names=class_names)
+        metrics["Early_Exit_Percentage"] = (np.array(all_paths) == "FAST").mean() * 100.0
+        metrics["Latency_ms"] = float(np.mean(latencies))
         return metrics
 
-    def train_full(
-        self,
-        data_dict: Dict[str, Any],
-        progress_callback: Optional[Callable[[int, Dict[str, Any]], None]] = None
-    ) -> Dict[str, Any]:
-        """Full training procedure across epochs with early stopping."""
-        train_ds = TensorDataset(torch.from_numpy(data_dict["X_train"]).float(), torch.from_numpy(data_dict["y_train"]).long())
-        val_ds = TensorDataset(torch.from_numpy(data_dict["X_val"]).float(), torch.from_numpy(data_dict["y_val"]).long())
-        test_ds = TensorDataset(torch.from_numpy(data_dict["X_test"]).float(), torch.from_numpy(data_dict["y_test"]).long())
-
-        train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
-        val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle=False)
-        test_loader = DataLoader(test_ds, batch_size=self.batch_size, shuffle=False)
-
+    def train_full(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        X_tr = data_dict["X_train"]
+        y_tr = data_dict["y_train"]
+        X_val = data_dict["X_val"]
+        y_val = data_dict["y_val"]
+        X_te = data_dict["X_test"]
+        y_te = data_dict["y_test"]
         class_names = data_dict["class_names"]
-        best_f1 = -1.0
-        best_epoch = 0
+
+        train_ds = TensorDataset(torch.from_numpy(X_tr.astype(np.float32)), torch.from_numpy(y_tr).long())
+        train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+
+        logger.info(f"Training on {len(X_tr):,} samples across {self.epochs} epochs on {self.device}...")
+
+        best_val_f1 = -1.0
+        best_state = None
         patience_counter = 0
 
-        logger.info(f"Starting training for {self.epochs} epochs on device: {self.device}...")
-
         for epoch in range(1, self.epochs + 1):
-            t0 = time.time()
-            train_stats = self.train_epoch(train_loader)
-            val_metrics = self.evaluate(val_loader, class_names=class_names, routing_mode="dynamic")
+            t_epoch_start = time.perf_counter()
+            loss_dict = self.train_epoch(train_loader)
 
-            epoch_time = time.time() - t0
+            val_metrics = self.evaluate_split(X_val, y_val, class_names=class_names, routing_mode="dynamic")
             val_f1 = val_metrics["F1_Macro"]
-            self.scheduler.step(val_f1)
+            val_acc = val_metrics["Accuracy"]
+            t_sec = time.perf_counter() - t_epoch_start
 
-            history_entry = {
+            record = {
                 "epoch": epoch,
-                "train_loss": train_stats["loss"],
-                "focal_loss": train_stats["focal_loss"],
-                "center_loss": train_stats["center_loss"],
-                "val_accuracy": val_metrics["Accuracy"],
+                "train_loss": loss_dict["loss"],
+                "focal_loss": loss_dict["focal_loss"],
+                "center_loss": loss_dict["center_loss"],
+                "val_accuracy": val_acc,
                 "val_f1": val_f1,
                 "early_exit_pct": val_metrics["Early_Exit_Percentage"],
-                "time_sec": epoch_time
+                "time_sec": t_sec
             }
-            self.history.append(history_entry)
-
-            if progress_callback:
-                progress_callback(epoch, history_entry)
+            self.history.append(record)
 
             logger.info(
-                f"Epoch {epoch}/{self.epochs} | Loss: {train_stats['loss']:.4f} | "
-                f"Val Acc: {val_metrics['Accuracy']*100:.2f}% | Val F1: {val_f1*100:.2f}% | "
-                f"Early Exit: {val_metrics['Early_Exit_Percentage']:.1f}% | Time: {epoch_time:.1f}s"
+                f"Epoch {epoch:2d}/{self.epochs:2d} | Loss: {loss_dict['loss']:.4f} | "
+                f"Val Acc: {val_acc*100:6.2f}% | Val Macro-F1: {val_f1*100:6.2f}% | "
+                f"Early-Exit: {val_metrics['Early_Exit_Percentage']:.1f}% ({t_sec:.1f}s)"
             )
 
-            # Checkpoint on best validation macro-F1
-            if val_f1 > best_f1:
-                best_f1 = val_f1
-                best_epoch = epoch
+            if val_f1 > best_val_f1:
+                best_val_f1 = val_f1
+                best_state = {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
                 patience_counter = 0
-                self.checkpoint_manager.save_checkpoint(
-                    model=self.model,
-                    metrics=val_metrics,
-                    config=self.config,
-                    epoch=epoch
-                )
+                torch.save(best_state, os.path.join(self.checkpoint_dir, "best_model.pt"))
             else:
                 patience_counter += 1
                 if patience_counter >= self.patience:
-                    logger.info(f"Early stopping triggered at epoch {epoch}. Best epoch was {best_epoch} with F1={best_f1:.4f}.")
+                    logger.info(f"Early stopping triggered at epoch {epoch} (best Val Macro-F1: {best_val_f1*100:.2f}%).")
                     break
 
-        # Load best model for final unseen test set evaluation
-        logger.info("Evaluating best model on unseen test set...")
-        self.model, _ = self.checkpoint_manager.load_checkpoint(self.model, device=str(self.device))
-        test_metrics = self.evaluate(test_loader, class_names=class_names, routing_mode="dynamic")
+        # Load best weights
+        if best_state is not None:
+            self.model.load_state_dict(best_state)
 
-        # Save final test evaluation results
-        self.checkpoint_manager.save_checkpoint(
-            model=self.model,
-            metrics=test_metrics,
-            config=self.config,
-            epoch=best_epoch
-        )
+        # Post-hoc calibration on validation split
+        logger.info("Fitting post-hoc Temperature Calibration on Validation Split...")
+        self.model.eval()
+        with torch.no_grad():
+            v_x = torch.from_numpy(X_val.astype(np.float32)).to(self.device)
+            v_out = self.model(v_x, routing_mode="always_deep")
+            val_logits = v_out["deep_logits"] if "deep_logits" in v_out else v_out["logits"]
+            self.calibrator.fit(val_logits, torch.from_numpy(y_val).long().to(self.device))
+            optimal_temp = float(self.calibrator.temperature.item())
+            self.model.set_temperature(optimal_temp)
+            logger.info(f"Calibrated temperature parameter: T = {optimal_temp:.4f}")
+
+        # Final single evaluation on UNTOUCHED Test Split
+        logger.info("Performing final frozen evaluation on held-out Test Split...")
+        test_metrics = self.evaluate_split(X_te, y_te, class_names=class_names, routing_mode="dynamic")
+
+        # Save metrics and history
+        pd.DataFrame(self.history).to_csv(os.path.join(self.checkpoint_dir, "training_history.csv"), index=False)
+        with open(os.path.join(self.checkpoint_dir, "metrics.json"), "w") as f:
+            json.dump(test_metrics, f, indent=2)
 
         return {
             "test_metrics": test_metrics,
-            "best_epoch": best_epoch,
-            "best_val_f1": best_f1,
-            "history": self.history
+            "val_metrics": val_metrics,
+            "best_val_f1": best_val_f1,
+            "history": self.history,
+            "optimal_temperature": optimal_temp
         }

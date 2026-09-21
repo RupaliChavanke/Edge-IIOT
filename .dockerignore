@@ -1,0 +1,10 @@
+archive.zip
+*.zip
+.venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+.DS_Store
+data/raw/*.csv
+logs/*.log

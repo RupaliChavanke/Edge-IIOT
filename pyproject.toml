@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edge-iiot-ids"
+version = "1.0.0"
+description = "Redpanda-Based Mutual Information-Driven Hybrid CNN-BiGRU Framework for Real-Time Multiclass IIoT Intrusion Detection"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Rupali Chavanke" }
+]
+requires-python = ">=3.10"
+keywords = [
+    "intrusion-detection",
+    "iiot",
+    "deep-learning",
+    "pytorch",
+    "redpanda",
+    "mrmr-jmi",
+    "onnx-runtime",
+    "cybersecurity",
+    "edge-computing"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Security",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
+dependencies = [
+    "torch>=2.0.0",
+    "streamlit>=1.30.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "scipy>=1.11.0",
+    "confluent-kafka>=2.3.0",
+    "kafka-python-ng>=2.2.0",
+    "plotly>=5.18.0",
+    "pyyaml>=6.0.0",
+    "requests>=2.31.0",
+    "psutil>=5.9.0",
+    "altair>=5.0.0",
+    "pydantic>=2.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "onnxruntime>=1.15.0",
+    "onnx>=1.14.0",
+    "xgboost>=1.7.0",
+    "lightgbm>=4.0.0",
+    "joblib>=1.3.0",
+    "optuna>=3.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0"
+]
+

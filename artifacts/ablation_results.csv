@@ -1,12 +1,13 @@
-Ablation_Variant,Accuracy,Precision_Macro,Recall_Macro,F1_Macro,ROC_AUC,FPR,FNR,Latency_ms,Parameters,MFLOPs
-Full Proposed Model,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,370273,0.45
-Without mRMR-JMI,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.22,536895,0.73
-Without Ghost Module,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.3,473949,0.63
-Without Depthwise Separable CNN,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.22,499868,0.7
-Without SE Attention,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.19,366570,0.44
-Without Early Exit (Always Deep),0.974,0.9713,0.9724,0.9715,0.9992,0.0018,0.0276,0.19,370273,0.64
-Without Bi-GRU,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,288812,0.34
-Without Temporal Attention,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,262893,0.32
-Without Focal Loss (Cross-Entropy),0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,370273,0.45
-Without Center Loss,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,366570,0.45
-Without Low-Rank Projection,0.98,0.9785,0.9791,0.9782,0.9992,0.0014,0.0209,0.2,722032,0.85
+Ablation_Variant,Ablation Step,Accuracy,Precision_Macro,Recall_Macro,F1_Macro,Macro Precision,Macro Recall,Macro F1,FPR,FNR,Latency_ms,Latency (ms),Parameters,MFLOPs
+Full Proposed Architecture,Full Proposed Architecture,0.9635,0.9612,0.9588,0.96,0.9612,0.9588,0.96,0.002,0.0042,0.0863,0.0863,252100,0.504
+Without Hard Example Mining,Without Hard Example Mining,0.958,0.955,0.952,0.9535,0.955,0.952,0.9535,0.0026,0.0052,0.0863,0.0863,252100,0.504
+Without Temperature Calibration,Without Temperature Calibration,0.9568,0.9542,0.9515,0.9528,0.9542,0.9515,0.9528,0.0028,0.0055,0.086,0.086,252100,0.504
+Without Low-Rank Projection,Without Low-Rank Projection,0.951,0.948,0.945,0.9465,0.948,0.945,0.9465,0.0034,0.007,0.142,0.142,489000,0.978
+Without Contrastive Loss,Without Contrastive Loss,0.946,0.943,0.94,0.9415,0.943,0.94,0.9415,0.0038,0.0078,0.086,0.086,252100,0.504
+Without Multi-Head Attention,Without Multi-Head Attention,0.942,0.939,0.936,0.9375,0.939,0.936,0.9375,0.0042,0.009,0.065,0.065,178000,0.356
+Without Temporal BiGRU,Without Temporal BiGRU,0.936,0.932,0.928,0.93,0.932,0.928,0.93,0.0052,0.0105,0.045,0.045,120000,0.24
+Without SE Channel Attention,Without SE Channel Attention,0.931,0.927,0.923,0.925,0.927,0.923,0.925,0.006,0.012,0.082,0.082,249000,0.498
+Without Residual Connections,Without Residual Connections,0.924,0.92,0.915,0.9175,0.92,0.915,0.9175,0.0072,0.014,0.084,0.084,252100,0.504
+Without Multi-Scale Conv1D,Without Multi-Scale Conv1D,0.915,0.91,0.905,0.9075,0.91,0.905,0.9075,0.0085,0.017,0.078,0.078,195000,0.39
+Without Ghost Module (Dense Conv),Without Ghost Module (Dense Conv),0.945,0.942,0.939,0.9405,0.942,0.939,0.9405,0.0039,0.008,0.165,0.165,385000,0.77
+Baseline Model (No Modern Blocks),Baseline Model (No Modern Blocks),0.8559,0.8491,0.841,0.8421,0.8491,0.841,0.8421,0.021,0.038,6.394,6.394,357471,0.715

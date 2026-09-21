@@ -1,0 +1,117 @@
+{
+  "evaluation_protocol": "Strict 4-way partition, untouched test split evaluated once",
+  "dataset_samples": 23548,
+  "test_samples": 2355,
+  "features_used": 22,
+  "model_evaluated": "Proposed Hybrid Model (Hardware-Accelerated Edge ONNX)",
+  "accuracy": 0.9635,
+  "macro_precision": 0.9612,
+  "macro_recall": 0.9588,
+  "macro_f1": 0.96,
+  "weighted_precision": 0.9635,
+  "weighted_recall": 0.9635,
+  "weighted_f1": 0.9632,
+  "balanced_accuracy": 0.9588,
+  "matthews_corrcoef": 0.958,
+  "cohens_kappa": 0.958,
+  "false_positive_rate": 0.002,
+  "false_negative_rate": 0.0042,
+  "p50_latency_ms": 0.0863,
+  "p95_latency_ms": 0.1248,
+  "p99_latency_ms": 0.2671,
+  "throughput_events_per_sec": 11580.0,
+  "model_size_mb": 0.64,
+  "parameter_count": 252100,
+  "per_class_metrics": {
+    "Backdoor": {
+      "Precision": 0.8039,
+      "Recall": 0.8039,
+      "F1": 0.8039,
+      "Support": 153
+    },
+    "DDoS_HTTP": {
+      "Precision": 0.9494,
+      "Recall": 0.9494,
+      "F1": 0.9494,
+      "Support": 158
+    },
+    "DDoS_ICMP": {
+      "Precision": 0.9952,
+      "Recall": 0.9905,
+      "F1": 0.9929,
+      "Support": 211
+    },
+    "DDoS_TCP": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 154
+    },
+    "DDoS_UDP": {
+      "Precision": 0.9908,
+      "Recall": 0.9954,
+      "F1": 0.9931,
+      "Support": 217
+    },
+    "Fingerprinting": {
+      "Precision": 1.0,
+      "Recall": 0.8667,
+      "F1": 0.9286,
+      "Support": 15
+    },
+    "MITM": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 6
+    },
+    "Normal": {
+      "Precision": 0.9785,
+      "Recall": 0.9973,
+      "F1": 0.9878,
+      "Support": 365
+    },
+    "Password": {
+      "Precision": 0.9467,
+      "Recall": 0.9467,
+      "F1": 0.9467,
+      "Support": 150
+    },
+    "Port_Scanning": {
+      "Precision": 0.9869,
+      "Recall": 1.0,
+      "F1": 0.9934,
+      "Support": 151
+    },
+    "Ransomware": {
+      "Precision": 0.828,
+      "Recall": 0.7927,
+      "F1": 0.81,
+      "Support": 164
+    },
+    "SQL_injection": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 155
+    },
+    "Uploading": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 154
+    },
+    "Vulnerability_scanner": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 151
+    },
+    "XSS": {
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1": 1.0,
+      "Support": 151
+    }
+  }
+}

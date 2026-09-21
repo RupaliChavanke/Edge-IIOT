@@ -3,7 +3,7 @@ Redpanda Topic Management and Initialization.
 Configures partitions, replication factors, and ensures mandatory topics exist.
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import os
 from confluent_kafka.admin import AdminClient, NewTopic
 import logging

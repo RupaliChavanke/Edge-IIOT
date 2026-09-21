@@ -1,0 +1,69 @@
+{
+  "project_name": "Edge-IIoT Multiclass Intrusion Detection System",
+  "version": "2.0.0-optimized",
+  "timestamp": "2026-09-19T04:08:49Z",
+  "best_accuracy_model": {
+    "file": "models/best_accuracy_model.pt",
+    "architecture": "OptimizedEdgeIIoTNet (Multi-Scale CNN + Residuals + SE + BiGRU + Temporal Attention + LayerNorm)",
+    "parameters": 252100,
+    "size_mb": 0.99
+  },
+  "best_edge_model": {
+    "file": "models/best_edge_model.onnx",
+    "runtime": "ONNX Runtime 1.24+ CPU",
+    "p50_latency_ms": 0.485,
+    "throughput_eps": 2061.8,
+    "size_mb": 0.98
+  },
+  "edge_tabular_model": {
+    "file": "models/best_edge_xgboost.json",
+    "runtime": "XGBoost CPU",
+    "p50_latency_ms": 0.247,
+    "throughput_eps": 331355.0,
+    "size_mb": 2.68
+  },
+  "preprocessor": "models/preprocessor.pkl",
+  "feature_selector": "models/feature_selector.pkl",
+  "calibration": "models/calibration.pkl",
+  "selected_features": [
+    "tcp.ack",
+    "len_payload",
+    "len_uri",
+    "len_file_data",
+    "tcp.seq",
+    "tcp.flags",
+    "tcp.len",
+    "len_query",
+    "len_referer",
+    "tcp.checksum",
+    "udp.stream",
+    "icmp.checksum",
+    "tcp.ack_raw",
+    "icmp.seq_le",
+    "tcp.flags.ack",
+    "tcp.connection.rst",
+    "http.content_length",
+    "tcp.connection.syn",
+    "http.response",
+    "mqtt.hdrflags",
+    "mqtt.msgtype",
+    "mqtt.len"
+  ],
+  "target_classes": [
+    "Backdoor",
+    "DDoS_HTTP",
+    "DDoS_ICMP",
+    "DDoS_TCP",
+    "DDoS_UDP",
+    "Fingerprinting",
+    "MITM",
+    "Normal",
+    "Password",
+    "Port_Scanning",
+    "Ransomware",
+    "SQL_injection",
+    "Uploading",
+    "Vulnerability_scanner",
+    "XSS"
+  ]
+}

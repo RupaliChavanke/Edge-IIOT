@@ -5,7 +5,10 @@ Tests streaming performance under variable message rates: 10, 50, 100, 250, 500,
 
 from typing import Dict, List, Any
 import time
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 import pandas as pd
 import numpy as np
 import logging
@@ -37,7 +40,7 @@ def benchmark_streaming_rates(
             latencies.append(elapsed_msg)
             count += 1
 
-            if count % 20 == 0:
+            if count % 20 == 0 and psutil is not None:
                 cpu_samples.append(psutil.cpu_percent(interval=None))
                 ram_samples.append(psutil.virtual_memory().percent)
 

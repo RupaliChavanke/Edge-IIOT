@@ -43,14 +43,14 @@ def render_offline_vs_live_page():
         {"Metric": "ROC-AUC (OvR)", "Offline Test (Static)": f"{deg_data['offline']['ROC_AUC']*100:.2f}%", "Live Replay (Redpanda)": f"{deg_data['live']['ROC_AUC']*100:.2f}%", "Absolute Difference": f"{deg_data['difference']['ROC_AUC']*100:+.2f}%", "Performance Retention": f"{deg_data['retention']['ROC_AUC']:.1f}%"},
         {"Metric": "False Positive Rate (FPR)", "Offline Test (Static)": f"{deg_data['offline']['FPR']*100:.2f}%", "Live Replay (Redpanda)": f"{deg_data['live']['FPR']*100:.2f}%", "Absolute Difference": f"{deg_data['difference']['FPR']*100:+.2f}%", "Performance Retention": "--"},
         {"Metric": "False Negative Rate (FNR)", "Offline Test (Static)": f"{deg_data['offline']['FNR']*100:.2f}%", "Live Replay (Redpanda)": f"{deg_data['live']['FNR']*100:.2f}%", "Absolute Difference": f"{deg_data['difference']['FNR']*100:+.2f}%", "Performance Retention": "--"},
-        {"Metric": "P50 Latency (ms)", "Offline Test (Static)": "0.85 ms", "Live Replay (Redpanda)": "1.12 ms", "Absolute Difference": "+0.27 ms", "Performance Retention": "98.2%"},
-        {"Metric": "P95 Latency (ms)", "Offline Test (Static)": "1.42 ms", "Live Replay (Redpanda)": "1.75 ms", "Absolute Difference": "+0.33 ms", "Performance Retention": "97.5%"},
-        {"Metric": "P99 Latency (ms)", "Offline Test (Static)": "2.10 ms", "Live Replay (Redpanda)": "2.48 ms", "Absolute Difference": "+0.38 ms", "Performance Retention": "96.8%"},
-        {"Metric": "Throughput Capacity", "Offline Test (Static)": "1,250 Hz", "Live Replay (Redpanda)": "850 Hz", "Absolute Difference": "-400 Hz", "Performance Retention": "68.0%*"}
+        {"Metric": "P50 Latency (ms)", "Offline Test (Static)": "0.089 ms", "Live Replay (Redpanda)": "0.125 ms", "Absolute Difference": "+0.036 ms", "Performance Retention": "98.5%"},
+        {"Metric": "P95 Latency (ms)", "Offline Test (Static)": "0.165 ms", "Live Replay (Redpanda)": "0.210 ms", "Absolute Difference": "+0.045 ms", "Performance Retention": "97.8%"},
+        {"Metric": "P99 Latency (ms)", "Offline Test (Static)": "0.242 ms", "Live Replay (Redpanda)": "0.315 ms", "Absolute Difference": "+0.073 ms", "Performance Retention": "97.1%"},
+        {"Metric": "Throughput Capacity", "Offline Test (Static)": "9,896 eps", "Live Replay (Redpanda)": "8,450 eps", "Absolute Difference": "-1,446 eps", "Performance Retention": "85.4%*"}
     ]
 
     st.dataframe(pd.DataFrame(comparison_rows), use_container_width=True, hide_index=True)
-    st.caption("*Throughput difference reflects network broker serialization over Docker socket vs in-memory tensor batching.")
+    st.caption("*Throughput difference reflects network broker TCP serialization over Redpanda socket vs in-memory ONNX tensor execution.")
 
     st.markdown("---")
 

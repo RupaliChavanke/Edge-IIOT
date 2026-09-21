@@ -1,0 +1,108 @@
+{
+  "optimal_threshold": 0.6,
+  "calibrated_temperature": 1.1220906972885132,
+  "grid_results": [
+    {
+      "Threshold": 0.1,
+      "FPR": 0.06319,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99426
+    },
+    {
+      "Threshold": 0.15,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.2,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.25,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.3,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.35,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.4,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.45,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.5,
+      "FPR": 0.05769,
+      "FNR": 0.0,
+      "Attack_Detection_F1": 0.99475
+    },
+    {
+      "Threshold": 0.55,
+      "FPR": 0.04396,
+      "FNR": 0.00301,
+      "Attack_Detection_F1": 0.99449
+    },
+    {
+      "Threshold": 0.6,
+      "FPR": 0.0,
+      "FNR": 0.00904,
+      "Attack_Detection_F1": 0.99546
+    },
+    {
+      "Threshold": 0.65,
+      "FPR": 0.0,
+      "FNR": 0.00954,
+      "Attack_Detection_F1": 0.99521
+    },
+    {
+      "Threshold": 0.7,
+      "FPR": 0.0,
+      "FNR": 0.01055,
+      "Attack_Detection_F1": 0.9947
+    },
+    {
+      "Threshold": 0.75,
+      "FPR": 0.0,
+      "FNR": 0.01055,
+      "Attack_Detection_F1": 0.9947
+    },
+    {
+      "Threshold": 0.8,
+      "FPR": 0.0,
+      "FNR": 0.01055,
+      "Attack_Detection_F1": 0.9947
+    },
+    {
+      "Threshold": 0.85,
+      "FPR": 0.0,
+      "FNR": 0.01155,
+      "Attack_Detection_F1": 0.99419
+    },
+    {
+      "Threshold": 0.9,
+      "FPR": 0.0,
+      "FNR": 0.02612,
+      "Attack_Detection_F1": 0.98677
+    }
+  ]
+}

@@ -87,13 +87,13 @@ def render_confidence_page():
             conf_audit.append({
                 "Attack Type": cname,
                 "Total Samples": samples,
-                "Correct Predictions": correct_preds,
-                "Incorrect Predictions": incorrect_preds,
+                "Correct (TP)": correct_preds,
+                "Misclassified (FP+FN)": incorrect_preds,
+                "Precision": f"{float(row.get('Precision', 0.0))*100:.2f}%",
+                "Recall (Detection)": f"{float(row.get('Recall', 0.0))*100:.2f}%",
                 "Mean Confidence": f"{avg_conf*100:.1f}%",
-                "Median Confidence": f"{min(avg_conf + 0.02, 0.98)*100:.1f}%",
-                "95th Percentile Conf": f"{min(avg_conf + 0.08, 0.99)*100:.1f}%",
                 "Calibration Error (ECE)": f"{float(row['ECE'])*100:.2f}%",
-                "Overconfident Errors (Risk)": max(0, int(incorrect_preds * 0.05))  # Only ~5% of errors cross high confidence
+                "Operational Status": "Well-Calibrated" if float(row['ECE']) <= 0.05 else "Audited Calibration"
             })
 
         st.dataframe(pd.DataFrame(conf_audit), use_container_width=True, hide_index=True)

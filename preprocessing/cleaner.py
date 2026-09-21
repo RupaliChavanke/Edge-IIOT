@@ -17,6 +17,10 @@ METADATA_DROP_COLUMNS = [
     "ip.dst_host",
     "arp.src.proto_ipv4",
     "arp.dst.proto_ipv4",
+    "tcp.srcport",
+    "tcp.dstport",
+    "udp.srcport",
+    "udp.dstport",
     "http.file_data",
     "http.request.full_uri",
     "http.referer",
@@ -110,7 +114,7 @@ class EdgeIIoTCleaner:
             if col in out.columns:
                 series = pd.to_numeric(out[col], errors="coerce")
                 series = series.replace([np.inf, -np.inf], np.nan)
-                out[col] = series.fillna(self.impute_values.get(col, 0.0)).astype(np.float32)
+                out[col] = series.fillna(self.impute_values.get(col, 0.0)).clip(-1e9, 1e9).astype(np.float32)
             else:
                 out[col] = np.float32(self.impute_values.get(col, 0.0))
 

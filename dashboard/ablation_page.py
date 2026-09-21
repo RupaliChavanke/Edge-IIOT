@@ -43,38 +43,49 @@ def render_ablation_page():
     st.subheader("📊 F1-Score vs Latency vs Parameter Impact")
 
     col1, col2 = st.columns(2)
+    var_col = "Ablation_Variant" if "Ablation_Variant" in ablation_df.columns else ("Ablation Step" if "Ablation Step" in ablation_df.columns else ablation_df.columns[0])
+    f1_col = "F1_Macro" if "F1_Macro" in ablation_df.columns else ("Macro F1" if "Macro F1" in ablation_df.columns else None)
+    lat_col = "Latency_ms" if "Latency_ms" in ablation_df.columns else ("Latency (ms)" if "Latency (ms)" in ablation_df.columns else None)
+
     with col1:
-        fig_f1 = px.bar(
-            ablation_df.sort_values(by="F1_Macro", ascending=True),
-            x="F1_Macro", y="Ablation_Variant",
-            orientation="h",
-            color="F1_Macro",
-            color_continuous_scale="Tealgrn",
-            title="Macro-F1 Score Degradation under Component Removal"
-        )
-        fig_f1.update_layout(paper_bgcolor="#0F172A", plot_bgcolor="#1E293B", font=dict(color="#F8FAFC"))
-        st.plotly_chart(fig_f1, use_container_width=True)
+        if f1_col:
+            fig_f1 = px.bar(
+                ablation_df.sort_values(by=f1_col, ascending=True),
+                x=f1_col, y=var_col,
+                orientation="h",
+                color=f1_col,
+                color_continuous_scale="Tealgrn",
+                title="Macro-F1 Score Degradation under Component Removal"
+            )
+            fig_f1.update_layout(paper_bgcolor="#0F172A", plot_bgcolor="#1E293B", font=dict(color="#F8FAFC"))
+            st.plotly_chart(fig_f1, use_container_width=True)
 
     with col2:
-        fig_params = px.bar(
-            ablation_df.sort_values(by="Parameters", ascending=True),
-            x="Parameters", y="Ablation_Variant",
-            orientation="h",
-            color="Latency_ms",
-            color_continuous_scale="Plasma",
-            title="Model Parameter Footprint & Latency (ms)"
-        )
-        fig_params.update_layout(paper_bgcolor="#0F172A", plot_bgcolor="#1E293B", font=dict(color="#F8FAFC"))
-        st.plotly_chart(fig_params, use_container_width=True)
+        if "Parameters" in ablation_df.columns and lat_col:
+            fig_params = px.bar(
+                ablation_df.sort_values(by="Parameters", ascending=True),
+                x="Parameters", y=var_col,
+                orientation="h",
+                color=lat_col,
+                color_continuous_scale="Plasma",
+                title="Model Parameter Footprint & Latency (ms)"
+            )
+            fig_params.update_layout(paper_bgcolor="#0F172A", plot_bgcolor="#1E293B", font=dict(color="#F8FAFC"))
+            st.plotly_chart(fig_params, use_container_width=True)
 
     st.markdown("---")
     st.subheader("📋 Comprehensive Empirical Ablation Table")
 
-    st.dataframe(
-        ablation_df.style.highlight_max(subset=["Accuracy", "F1_Macro", "ROC_AUC"], color="#065F46")
-                         .highlight_min(subset=["Latency_ms", "Parameters", "MFLOPs", "FPR"], color="#1E3A8A"),
-        use_container_width=True
-    )
+    max_cols = [c for c in ["Accuracy", "F1_Macro", "Macro F1", "ROC_AUC"] if c in ablation_df.columns]
+    min_cols = [c for c in ["Latency_ms", "Latency (ms)", "Parameters", "MFLOPs", "FLOPs_M", "FPR"] if c in ablation_df.columns]
+
+    styler = ablation_df.style
+    if max_cols:
+        styler = styler.highlight_max(subset=max_cols, color="#065F46")
+    if min_cols:
+        styler = styler.highlight_min(subset=min_cols, color="#1E3A8A")
+
+    st.dataframe(styler, use_container_width=True)
 
     png_path = "artifacts/ablation.png"
     if os.path.exists(png_path):

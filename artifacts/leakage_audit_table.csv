@@ -1,0 +1,62 @@
+Feature,Mutual_Information,Correlation,Predictive_Power,Leakage_Risk,Keep_Remove,Reason
+tcp.ack,1.3091,0.0937,0.2844,LOW,KEEP,Low-risk behavioral signal
+tcp.seq,1.009,-0.2673,0.3178,LOW,KEEP,Low-risk behavioral signal
+tcp.flags,0.8124,-0.1685,0.2974,LOW,KEEP,Low-risk behavioral signal
+tcp.len,0.6821,-0.0005,0.2517,LOW,KEEP,Low-risk behavioral signal
+tcp.checksum,0.4479,-0.1287,0.2466,LOW,KEEP,Low-risk behavioral signal
+tcp.ack_raw,0.3966,-0.1369,0.2301,LOW,KEEP,Low-risk behavioral signal
+udp.stream,0.312,0.1104,0.2472,LOW,KEEP,Low-risk behavioral signal
+icmp.checksum,0.3058,0.1176,0.2446,LOW,KEEP,Low-risk behavioral signal
+icmp.seq_le,0.3007,0.122,0.2458,LOW,KEEP,Low-risk behavioral signal
+tcp.flags.ack,0.2992,-0.18,0.2228,LOW,KEEP,Low-risk behavioral signal
+http.content_length,0.1812,0.0674,0.2094,LOW,KEEP,Low-risk behavioral signal
+tcp.payload,0.1532,0.0823,0.1948,LOW,KEEP,Low-risk behavioral signal
+tcp.connection.syn,0.1052,0.1,0.1847,LOW,KEEP,Low-risk behavioral signal
+tcp.connection.rst,0.0978,-0.0079,0.1688,LOW,KEEP,Low-risk behavioral signal
+mqtt.hdrflags,0.0725,-0.2988,0.1548,LOW,KEEP,Low-risk behavioral signal
+http.response,0.0698,0.0952,0.1815,LOW,KEEP,Low-risk behavioral signal
+mqtt.msgtype,0.0682,-0.2988,0.1548,LOW,KEEP,Low-risk behavioral signal
+mqtt.len,0.0522,-0.2712,0.1548,LOW,KEEP,Low-risk behavioral signal
+tcp.connection.fin,0.0502,-0.0886,0.1548,LOW,KEEP,Low-risk behavioral signal
+dns.qry.name,0.0312,0.0326,0.165,LOW,KEEP,Low-risk behavioral signal
+arp.hw.size,0.0256,0.0361,0.1593,LOW,KEEP,Low-risk behavioral signal
+mqtt.conflag.cleansess,0.0213,-0.2113,0.1548,LOW,KEEP,Low-risk behavioral signal
+dns.qry.name.len,0.0205,0.0163,0.1562,LOW,KEEP,Low-risk behavioral signal
+mqtt.ver,0.0193,-0.2113,0.1548,LOW,KEEP,Low-risk behavioral signal
+udp.port,0.0188,-0.0301,0.1572,LOW,KEEP,Low-risk behavioral signal
+tcp.options,0.016,0.0173,0.1573,LOW,KEEP,Low-risk behavioral signal
+mqtt.conflags,0.0149,-0.2113,0.1548,LOW,KEEP,Low-risk behavioral signal
+arp.opcode,0.0141,0.0355,0.1593,LOW,KEEP,Low-risk behavioral signal
+dns.qry.qu,0.0141,0.0144,0.1562,LOW,KEEP,Low-risk behavioral signal
+mqtt.proto_len,0.0135,-0.2113,0.1548,LOW,KEEP,Low-risk behavioral signal
+mqtt.topic_len,0.0122,-0.2051,0.1548,LOW,KEEP,Low-risk behavioral signal
+tcp.connection.synack,0.0117,-0.0815,0.1548,LOW,KEEP,Low-risk behavioral signal
+dns.retransmission,0.0071,-0.0163,0.1548,LOW,KEEP,Low-risk behavioral signal
+tcp.dstport,0.0,-0.2435,0.2937,CRITICAL,REMOVE,Shortcut identifier / temporal metadata leakage
+tcp.srcport,0.0,-0.0967,0.2772,CRITICAL,REMOVE,Shortcut identifier / temporal metadata leakage
+udp.time_delta,0.0,-0.0041,0.1572,CRITICAL,REMOVE,Shortcut identifier / temporal metadata leakage
+icmp.transmit_timestamp,0.0,0.0097,0.1553,CRITICAL,REMOVE,Shortcut identifier / temporal metadata leakage
+frame.time,0.0,0.0028,0.1548,CRITICAL,REMOVE,Shortcut identifier / temporal metadata leakage
+ip.src_host,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mqtt.msg_decoded_as,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mbtcp.trans_id,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mbtcp.len,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+ip.dst_host,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+arp.dst.proto_ipv4,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mqtt.topic,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mqtt.protoname,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+arp.src.proto_ipv4,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+icmp.unused,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mqtt.msg,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.request.uri.query,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.file_data,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.request.method,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.referer,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mqtt.conack.flags,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+dns.retransmit_request_in,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+dns.retransmit_request,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.request.full_uri,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+dns.qry.type,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.request.version,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+http.tls_port,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature
+mbtcp.unit_id,0.0,0.0,0.0,LOW,REMOVE,Zero variance constant feature

@@ -1,0 +1,32 @@
+{
+  "lowest_recall_class": "Backdoor",
+  "lowest_precision_class": "Backdoor",
+  "lowest_f1_class": "Backdoor",
+  "top_confusion_pairs": [
+    {
+      "True_Class": "Backdoor",
+      "Predicted_Class": "Ransomware",
+      "Count": 40
+    },
+    {
+      "True_Class": "Ransomware",
+      "Predicted_Class": "Backdoor",
+      "Count": 39
+    },
+    {
+      "True_Class": "Password",
+      "Predicted_Class": "DDoS_HTTP",
+      "Count": 21
+    },
+    {
+      "True_Class": "DDoS_HTTP",
+      "Predicted_Class": "Password",
+      "Count": 9
+    },
+    {
+      "True_Class": "Backdoor",
+      "Predicted_Class": "Normal",
+      "Count": 5
+    }
+  ]
+}

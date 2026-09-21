@@ -3,6 +3,7 @@ End-to-End Integration Test for Redpanda Streaming Pipeline.
 Verifies live message production to 'edge-iiot-raw', consumption, inference, and prediction publishing.
 """
 
+import os
 import time
 import pytest
 from streaming.health import RedpandaHealthChecker
@@ -11,16 +12,16 @@ from streaming.redpanda_consumer import EdgeIIoTStreamingConsumer
 
 
 def test_live_redpanda_pipeline():
-    # Check if broker is reachable
-    checker = RedpandaHealthChecker("localhost:19092")
+    broker = os.getenv("REDPANDA_BROKERS", "localhost:19092")
+    checker = RedpandaHealthChecker(broker)
     health = checker.check_health()
     if health["status"] != "CONNECTED":
-        pytest.skip("Redpanda broker not reachable at localhost:19092. Skipping live streaming test.")
+        pytest.skip(f"Redpanda broker not reachable at {broker}. Skipping live streaming test.")
 
-    producer = EdgeIIoTStreamingProducer(rate_msg_per_sec=20)
+    producer = EdgeIIoTStreamingProducer(brokers=broker, rate_msg_per_sec=20)
     producer.start(loop_dataset=False)
 
-    consumer = EdgeIIoTStreamingConsumer()
+    consumer = EdgeIIoTStreamingConsumer(brokers=broker)
     consumer.start()
 
     # Wait for events to circulate
@@ -43,9 +44,10 @@ def test_live_redpanda_pipeline():
 def test_streaming_counter_scaling_and_reset():
     from dashboard.state import start_pipeline, stop_pipeline, reset_pipeline_stats
 
-    checker = RedpandaHealthChecker("localhost:19092")
+    broker = os.getenv("REDPANDA_BROKERS", "localhost:19092")
+    checker = RedpandaHealthChecker(broker)
     if checker.check_health()["status"] != "CONNECTED":
-        pytest.skip("Redpanda broker not reachable.")
+        pytest.skip(f"Redpanda broker not reachable at {broker}.")
 
     prod, cons = start_pipeline(rate=50.0)
     time.sleep(2.5)

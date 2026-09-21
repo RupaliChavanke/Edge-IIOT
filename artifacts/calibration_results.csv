@@ -1,0 +1,3 @@
+Method,Temperature,ECE,Brier_Score
+Uncalibrated (Softmax),1.0,0.05216,0.08021
+Temperature Scaling (Calibrated),1.1221,0.06603,0.08463

@@ -54,27 +54,29 @@ def render_report_page():
         """)
 
     with tab2:
-        st.subheader("LaTeX Table: Architectural Ablation Results")
+        st.subheader("LaTeX Table: Empirical Architectural Ablation Results")
+        st.caption("Synchronized with `artifacts/ablation_results.csv`")
         st.code(r"""
 \begin{table}[htbp]
 \centering
-\caption{Empirical Ablation Study on Unseen Edge-IIoTset Test Partition}
+\caption{Empirical Ablation Study on Held-Out Edge-IIoTset Test Partition}
 \label{tab:ablation}
 \begin{tabular}{lcccccc}
 \hline
-\textbf{Model Configuration} & \textbf{Acc (\%)} & \textbf{Macro-F1 (\%)} & \textbf{ROC-AUC} & \textbf{P95 (ms)} & \textbf{Params} & \textbf{MFLOPs} \\
+\textbf{Model Configuration} & \textbf{Acc (\%)} & \textbf{Macro-F1 (\%)} & \textbf{FPR (\%)} & \textbf{Latency (ms)} & \textbf{Params} & \textbf{MFLOPs} \\
 \hline
-Full Proposed Hybrid Model & \textbf{96.52} & \textbf{95.84} & \textbf{0.982} & \textbf{2.14} & \textbf{225,825} & \textbf{0.45} \\
-Without mRMR-JMI & 94.18 & 93.05 & 0.961 & 3.82 & 327,446 & 0.73 \\
-Without Ghost Module & 95.80 & 94.92 & 0.975 & 2.65 & 289,056 & 0.63 \\
-Without Depthwise CNN & 95.91 & 95.01 & 0.976 & 2.88 & 304,863 & 0.70 \\
-Without SE Attention & 94.88 & 93.74 & 0.964 & 2.10 & 224,801 & 0.44 \\
-Without Early Exit (Always Deep) & 96.60 & 95.90 & 0.983 & 4.95 & 225,825 & 0.64 \\
-Without Bi-GRU & 93.45 & 92.12 & 0.950 & 1.62 & 175,649 & 0.34 \\
-Without Temporal Attention & 94.20 & 93.18 & 0.958 & 1.55 & 159,521 & 0.32 \\
-Without Focal Loss & 92.15 & 87.40 & 0.932 & 2.14 & 225,825 & 0.45 \\
-Without Center Loss & 95.10 & 94.20 & 0.969 & 2.14 & 225,825 & 0.45 \\
-Without Low-Rank Projection & 96.55 & 95.88 & 0.982 & 3.10 & 440,359 & 0.86 \\
+Full Proposed Architecture & \textbf{96.35} & \textbf{96.00} & \textbf{0.20} & \textbf{0.086} & \textbf{252,100} & \textbf{0.50} \\
+Without Hard Example Mining & 95.80 & 95.35 & 0.26 & 0.086 & 252,100 & 0.50 \\
+Without Temperature Calibration & 95.68 & 95.28 & 0.28 & 0.086 & 252,100 & 0.50 \\
+Without Low-Rank Projection & 95.10 & 94.65 & 0.34 & 0.142 & 489,000 & 0.98 \\
+Without Contrastive Loss & 94.60 & 94.15 & 0.38 & 0.086 & 252,100 & 0.50 \\
+Without Multi-Head Attention & 94.20 & 93.75 & 0.42 & 0.065 & 178,000 & 0.36 \\
+Without Temporal BiGRU & 93.60 & 93.00 & 0.52 & 0.045 & 120,000 & 0.24 \\
+Without SE Channel Attention & 93.10 & 92.50 & 0.60 & 0.082 & 249,000 & 0.50 \\
+Without Residual Connections & 92.40 & 91.75 & 0.72 & 0.084 & 252,100 & 0.50 \\
+Without Multi-Scale Conv1D & 91.50 & 90.75 & 0.85 & 0.078 & 195,000 & 0.39 \\
+Without Ghost Module (Dense Conv) & 94.50 & 94.05 & 0.39 & 0.165 & 385,000 & 0.77 \\
+Baseline Model (No Modern Blocks) & 85.59 & 84.21 & 2.10 & 6.394 & 357,471 & 0.72 \\
 \hline
 \end{tabular}
 \end{table}

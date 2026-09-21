@@ -1,0 +1,4 @@
+Sample_Index,True_Class,Predicted_Class,Confidence,Top_Feature_1,Feature_1_Val,Top_Feature_2,Feature_2_Val,Error_Pattern
+4308,Normal,Backdoor,0.7814,tcp.ack,11.7683,len_payload,106.5556,Benign classified as Backdoor
+14708,Normal,Ransomware,0.586,tcp.ack,-0.0021,len_payload,-0.0741,Benign classified as Ransomware
+6973,Normal,Ransomware,0.586,tcp.ack,-0.0021,len_payload,-0.0741,Benign classified as Ransomware

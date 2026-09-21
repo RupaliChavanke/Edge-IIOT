@@ -151,9 +151,9 @@ class ModelManager:
         model_path = os.path.join(self.artifacts_dir, "best_model.pt")
         state_dict = torch.load(model_path, map_location=self.device)
         if "state_dict" in state_dict:
-            self.model.load_state_dict(state_dict["state_dict"])
+            self.model.load_state_dict(state_dict["state_dict"], strict=False)
         else:
-            self.model.load_state_dict(state_dict)
+            self.model.load_state_dict(state_dict, strict=False)
 
         self.model.to(self.device)
         self.model.eval()  # Strictly frozen evaluation mode

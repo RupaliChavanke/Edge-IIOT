@@ -1,0 +1,8 @@
+Category,Variant,Accuracy,Macro_F1
+Convolution Scales,Single Kernel (k=3),0.9287,0.9102
+Convolution Scales,"Multi-Scale (k=3, 5)",0.9176,0.8844
+Attention,No Attention,0.8735,0.8258
+Attention,SE Channel Attention,0.8786,0.8597
+Loss Function,Standard Cross Entropy,0.8815,0.8338
+Loss Function,Focal Loss (gamma=2.0),0.8947,0.886
+Loss Function,Class-Balanced Focal Loss,0.8573,0.8237
