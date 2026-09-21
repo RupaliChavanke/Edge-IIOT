@@ -99,7 +99,7 @@ services:
       REDPANDA_BROKERS: "redpanda:9092"
     volumes:
       - .:/app
-    command: python streaming/redpanda_consumer.py
+    command: python -m streaming.redpanda_consumer
     networks:
       - redpanda-net
 
@@ -116,7 +116,7 @@ services:
       STREAM_RATE: "25"
     volumes:
       - .:/app
-    command: python streaming/redpanda_producer.py --rate 25 --dataset data/samples/edge_iiot_sample.csv --loop
+    command: python -m streaming.redpanda_producer --rate 25 --dataset data/samples/edge_iiot_sample.csv --loop
     networks:
       - redpanda-net
 

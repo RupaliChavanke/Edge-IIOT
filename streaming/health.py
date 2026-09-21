@@ -6,6 +6,7 @@ Seamlessly detects and supports Cloud Mode (InMemoryStreamingBus) when Docker/Re
 
 from typing import Dict, List, Optional, Any
 import os
+import socket
 import time
 import logging
 
@@ -28,9 +29,21 @@ class RedpandaHealthChecker:
         self.brokers = brokers or os.getenv("REDPANDA_BROKERS", "localhost:19092")
         self.explicit_cloud_mode = os.getenv("STREAMING_MODE", "").lower() in ["cloud", "memory", "in_memory"]
 
+    def _broker_socket_available(self, timeout: float) -> bool:
+        """Avoid creating Kafka clients when the configured broker is offline."""
+        try:
+            broker = self.brokers.split(",", 1)[0].strip()
+            host, port = broker.rsplit(":", 1)
+            with socket.create_connection((host.strip("[]"), int(port)), timeout=timeout):
+                return True
+        except (OSError, ValueError):
+            return False
+
     def is_redpanda_available(self, timeout: float = 1.5) -> bool:
         """Fast check if Redpanda broker is responsive."""
         if self.explicit_cloud_mode or not HAS_CONFLUENT_KAFKA:
+            return False
+        if not self._broker_socket_available(timeout):
             return False
         try:
             admin = AdminClient({
@@ -57,48 +70,51 @@ class RedpandaHealthChecker:
         ]
 
         if not self.explicit_cloud_mode and HAS_CONFLUENT_KAFKA:
-            try:
-                admin = AdminClient({
-                    "bootstrap.servers": self.brokers,
-                    "socket.timeout.ms": 2000
-                })
-                # Query cluster metadata
-                metadata = admin.list_topics(timeout=2)
-                ping_ms = (time.perf_counter() - t0) * 1000.0
+            if not self._broker_socket_available(0.25):
+                error_str = f"Broker {self.brokers} is not accepting TCP connections."
+            else:
+                try:
+                    admin = AdminClient({
+                        "bootstrap.servers": self.brokers,
+                        "socket.timeout.ms": 2000
+                    })
+                    # Query cluster metadata
+                    metadata = admin.list_topics(timeout=2)
+                    ping_ms = (time.perf_counter() - t0) * 1000.0
 
-                broker_list = list(metadata.brokers.values())
-                topics_meta = metadata.topics
+                    broker_list = list(metadata.brokers.values())
+                    topics_meta = metadata.topics
 
-                topic_status = {}
-                for t_name in mandatory_topics:
-                    if t_name in topics_meta:
-                        t_info = topics_meta[t_name]
-                        num_partitions = len(t_info.partitions)
-                        topic_status[t_name] = {
-                            "status": "ACTIVE" if not t_info.error else f"ERROR: {t_info.error}",
-                            "partitions": num_partitions
-                        }
-                    else:
-                        topic_status[t_name] = {
-                            "status": "NOT_CREATED",
-                            "partitions": 0
-                        }
+                    topic_status = {}
+                    for t_name in mandatory_topics:
+                        if t_name in topics_meta:
+                            t_info = topics_meta[t_name]
+                            num_partitions = len(t_info.partitions)
+                            topic_status[t_name] = {
+                                "status": "ACTIVE" if not t_info.error else f"ERROR: {t_info.error}",
+                                "partitions": num_partitions
+                            }
+                        else:
+                            topic_status[t_name] = {
+                                "status": "NOT_CREATED",
+                                "partitions": 0
+                            }
 
-                return {
-                    "status": "CONNECTED",
-                    "mode": "redpanda",
-                    "broker": self.brokers,
-                    "ping_ms": round(ping_ms, 2),
-                    "broker_count": len(broker_list),
-                    "brokers": [f"{b.host}:{b.port} (node {b.id})" for b in broker_list],
-                    "topics": topic_status,
-                    "error": None,
-                    "cloud_fallback": False,
-                    "troubleshooting": None
-                }
-            except Exception as e:
-                logger.debug(f"Redpanda cluster check at {self.brokers} failed: {e}. Activating Cloud Mode.")
-                error_str = str(e)
+                    return {
+                        "status": "CONNECTED",
+                        "mode": "redpanda",
+                        "broker": self.brokers,
+                        "ping_ms": round(ping_ms, 2),
+                        "broker_count": len(broker_list),
+                        "brokers": [f"{b.host}:{b.port} (node {b.id})" for b in broker_list],
+                        "topics": topic_status,
+                        "error": None,
+                        "cloud_fallback": False,
+                        "troubleshooting": None
+                    }
+                except Exception as e:
+                    logger.debug(f"Redpanda cluster check at {self.brokers} failed: {e}. Activating Cloud Mode.")
+                    error_str = str(e)
         else:
             error_str = "Explicit cloud mode requested or confluent_kafka unavailable."
 

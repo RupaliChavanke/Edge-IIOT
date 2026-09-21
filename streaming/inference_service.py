@@ -11,6 +11,7 @@ import json
 import uuid
 import argparse
 import threading
+from typing import Optional
 from confluent_kafka import Consumer, Producer, KafkaError
 import logging
 

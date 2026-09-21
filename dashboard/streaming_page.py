@@ -41,18 +41,18 @@ def render_streaming_page():
         
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
-            if st.button("▶️ START PRODUCER", type="primary", use_container_width=True):
+            if st.button("▶️ START PRODUCER", type="primary", width="stretch"):
                 p = start_producer(rate=rate)
                 st.success("Producer started producing to 'edge-iiot-raw'!")
                 st.rerun()
         with col_p2:
-            if st.button("⏸️ PAUSE", use_container_width=True):
+            if st.button("⏸️ PAUSE", width="stretch"):
                 if prod:
                     prod.pause()
                     st.info("Producer paused.")
                     st.rerun()
         with col_p3:
-            if st.button("⏹️ STOP PRODUCER", use_container_width=True):
+            if st.button("⏹️ STOP PRODUCER", width="stretch"):
                 stop_producer()
                 st.warning("Producer stopped.")
                 st.rerun()
@@ -64,12 +64,12 @@ def render_streaming_page():
         st.subheader("📥 Streaming Consumer & Inference Controls")
         col_c1, col_c2 = st.columns(2)
         with col_c1:
-            if st.button("▶️ START INFERENCE", type="primary", use_container_width=True):
+            if st.button("▶️ START INFERENCE", type="primary", width="stretch"):
                 c = start_consumer()
                 st.success("Inference consumer active on 'edge-iiot-raw'!")
                 st.rerun()
         with col_c2:
-            if st.button("⏹️ STOP INFERENCE", use_container_width=True):
+            if st.button("⏹️ STOP INFERENCE", width="stretch"):
                 stop_consumer()
                 st.warning("Consumer stopped.")
                 st.rerun()
@@ -132,7 +132,7 @@ def render_streaming_page():
                 df_ev = pd.DataFrame(events)
                 cols_to_show = ["timestamp", "event_id", "predicted_attack", "confidence", "entropy", "path_selected", "risk_level"]
                 existing_cols = [c for c in cols_to_show if c in df_ev.columns]
-                st.dataframe(df_ev[existing_cols], use_container_width=True)
+                st.dataframe(df_ev[existing_cols], width="stretch")
             else:
                 st.info("No new events currently in partition buffer. Launch producer & inference to observe live stream.")
         except Exception as e:
