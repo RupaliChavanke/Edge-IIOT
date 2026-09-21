@@ -496,6 +496,14 @@ if "active_page_num" not in st.session_state:
     m = re.search(r"(\d+)\.", str(old_str))
     st.session_state["active_page_num"] = int(m.group(1)) if m else 1
 
+CATEGORIES_MAP = {
+    "🌟 Executive Command (3 Pages)": "Executive Command",
+    "📊 Dataset & Features (5 Pages)": "Dataset & Features",
+    "🧠 Architecture & Ablation (4 Pages)": "Architecture & Ablation",
+    "📈 Performance & Proof (10 Pages)": "Performance & Proof",
+    "⚡ Streaming Telemetry (5 Pages)": "Streaming Telemetry"
+}
+
 # Quick Command Jumps (Fast Pins)
 def jump_to_page(page_num: int):
     """Synchronize quick-jump state with the persistent navigation widget."""
@@ -505,6 +513,12 @@ def jump_to_page(page_num: int):
     st.session_state["active_page_num"] = page_num
     st.session_state["active_page"] = page["label"]
     st.session_state["soc_nav_radio"] = page["label"]
+    st.session_state["nav_search_input"] = ""
+    category_key = next(
+        key for key, category in CATEGORIES_MAP.items()
+        if category == page["category"]
+    )
+    st.session_state["cat_selectbox"] = category_key
 
 
 st.sidebar.markdown("""
@@ -564,15 +578,6 @@ if search_term:
         available_options = [p["label"] for p in RESEARCH_PAGES_META]
 else:
     if nav_view == "📂 Categorized":
-        # Cluster definitions with page counts
-        CATEGORIES_MAP = {
-            "🌟 Executive Command (3 Pages)": "Executive Command",
-            "📊 Dataset & Features (5 Pages)": "Dataset & Features",
-            "🧠 Architecture & Ablation (4 Pages)": "Architecture & Ablation",
-            "📈 Performance & Proof (10 Pages)": "Performance & Proof",
-            "⚡ Streaming Telemetry (5 Pages)": "Streaming Telemetry"
-        }
-        
         # Determine default category based on currently active page
         current_cat = next(
             (p["category"] for p in RESEARCH_PAGES_META if p["num"] == st.session_state["active_page_num"]),
